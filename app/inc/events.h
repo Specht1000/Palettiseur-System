@@ -1,8 +1,3 @@
-/*
- *  Created on: 16/12/2023
- *      Author: Raffael e Nathan
- */
-
 #ifndef INC_EVENTS_H_
 #define INC_EVENTS_H_
 
