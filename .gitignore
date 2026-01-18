@@ -1,0 +1,8 @@
+Debug/
+*.o
+*.elf
+*.map
+*.bin
+*.log
+.settings/
+System Volume Information/
