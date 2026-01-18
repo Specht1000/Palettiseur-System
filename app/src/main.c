@@ -1,10 +1,3 @@
-/*
- * main.c
- *
- *  Created on: 15/12/2023
- *      Author: Raffael Rocha Daltoe and Nathan Grau
- */
-
 #include "main.h"
 
 // Queue
