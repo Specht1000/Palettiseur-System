@@ -1,10 +1,3 @@
-/*
- * main.h
- *
- *  Created on: 13 févr. 2023
- *      Author: Raffael Daltoe
- */
-
 #ifndef INC_MAIN_H_
 #define INC_MAIN_H_
 
