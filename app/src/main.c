@@ -118,7 +118,7 @@ int main(void)
 static inline void SEND_CMD(uint32_t mask, uint32_t state)
 {
     command_message_t cmd;
-    cmd.mask  = mask;
+    cmd.mask = mask;
     cmd.state = state;
     xQueueSendToBack(xComQueue, &cmd, 0);
 }
@@ -126,7 +126,7 @@ static inline void SEND_CMD(uint32_t mask, uint32_t state)
 void vTaskBoxGenerator(void *pvParameters)
 {
     const TickType_t PERIOD = 10000 / portTICK_RATE_MS; // 10s
-    const TickType_t PULSE  =  250 / portTICK_RATE_MS; // 250ms
+    const TickType_t PULSE = 250 / portTICK_RATE_MS; // 250ms
 
     TickType_t last = xTaskGetTickCount();
 
@@ -154,14 +154,14 @@ void vTaskGateAndPusher(void *pvParameters)
     while (1)
     {
         // 1) espera 1 caixa gerar um pulso completo no Entree (ON depois OFF)
-        sub.sem_id       = 1;
-        sub.sensor_id    = Entree_Palettiseur_MSK;
+        sub.sem_id = 1;
+        sub.sensor_id = Entree_Palettiseur_MSK;
         sub.sensor_state = Entree_Palettiseur_ON;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemCarton, portMAX_DELAY);
 
-        sub.sem_id       = 1;
-        sub.sensor_id    = Entree_Palettiseur_MSK;
+        sub.sem_id = 1;
+        sub.sensor_id = Entree_Palettiseur_MSK;
         sub.sensor_state = Entree_Palettiseur_OFF;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemCarton, portMAX_DELAY);
@@ -171,20 +171,20 @@ void vTaskGateAndPusher(void *pvParameters)
 		{
 			// Chegou a 1a do par: mantém fechado (segura a próxima)
 			SEND_CMD(Blocage_Entree_Palettiseur_MSK, Blocage_Entree_Palettiseur_ON);
-			SEND_CMD(Charger_Palettetiseur_MSK,      Charger_Palettetiseur_OFF);
+			SEND_CMD(Charger_Palettetiseur_MSK, Charger_Palettetiseur_OFF);
 			state = 1;
 		}
 		else
 		{
 			// Chegou a 2a do par: abre para entrarem as DUAS e puxa
 			SEND_CMD(Blocage_Entree_Palettiseur_MSK, Blocage_Entree_Palettiseur_OFF);
-			SEND_CMD(Charger_Palettetiseur_MSK,      Charger_Palettetiseur_ON);
+			SEND_CMD(Charger_Palettetiseur_MSK, Charger_Palettetiseur_ON);
 
 			vTaskDelay(4000);
 
 			// E já volta a fechar para não deixar a 3a entrar antes de empurrar
 			SEND_CMD(Blocage_Entree_Palettiseur_MSK, Blocage_Entree_Palettiseur_ON);
-			SEND_CMD(Charger_Palettetiseur_MSK,      Charger_Palettetiseur_OFF);
+			SEND_CMD(Charger_Palettetiseur_MSK, Charger_Palettetiseur_OFF);
 
 			// Agora sinaliza o empurrador
 			xSemaphoreGive(xSemPush2);
@@ -212,8 +212,8 @@ void vTaskPoussoir2Boxes(void *pvParameters)
         xSemaphoreTake(xSemPush2, portMAX_DELAY);
 
         // home (ON)
-        sub.sem_id       = 4;
-        sub.sensor_id    = Limite_Poussoir_MSK;
+        sub.sem_id = 4;
+        sub.sensor_id = Limite_Poussoir_MSK;
         sub.sensor_state = Limite_Poussoir_ON;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemPoussoirEvt, portMAX_DELAY);
@@ -222,15 +222,15 @@ void vTaskPoussoir2Boxes(void *pvParameters)
         SEND_CMD(Poussoir_MSK, Poussoir_ON);
 
         // sai do home (OFF)
-        sub.sem_id       = 4;
-        sub.sensor_id    = Limite_Poussoir_MSK;
+        sub.sem_id = 4;
+        sub.sensor_id = Limite_Poussoir_MSK;
         sub.sensor_state = Limite_Poussoir_OFF;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemPoussoirEvt, portMAX_DELAY);
 
         // volta ao home (ON)
-        sub.sem_id       = 4;
-        sub.sensor_id    = Limite_Poussoir_MSK;
+        sub.sem_id = 4;
+        sub.sensor_id = Limite_Poussoir_MSK;
         sub.sensor_state = Limite_Poussoir_ON;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemPoussoirEvt, portMAX_DELAY);
@@ -261,9 +261,9 @@ void vTaskAscenseur(void *pvParameters)
     command.mask  = 0;
 
     // Tempos (ajusta se precisar)
-    const TickType_t SETTLE_WAIT     = 200 / portTICK_RATE_MS;
-    const TickType_t CLAMP_HOLD      = 250 / portTICK_RATE_MS;
-    const TickType_t DROP_WAIT       = 1200 / portTICK_RATE_MS; // tempo pra cair após abrir
+    const TickType_t SETTLE_WAIT = 200 / portTICK_RATE_MS;
+    const TickType_t CLAMP_HOLD = 250 / portTICK_RATE_MS;
+    const TickType_t DROP_WAIT = 1200 / portTICK_RATE_MS; // tempo pra cair após abrir
     const TickType_t NUDGE_DOWN_TIME = 350 / portTICK_RATE_MS;  // descer um pouco antes de fechar (se precisar)
 
     while (1)
@@ -282,24 +282,24 @@ void vTaskAscenseur(void *pvParameters)
 
         if (FACTORY_IO_Sensors_Get(Ascenceur_Etage_1_MSK) != Ascenceur_Etage_1_ON)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Ascenceur_Etage_1_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Ascenceur_Etage_1_MSK;
             s.sensor_state = Ascenceur_Etage_1_ON;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
         }
 
         // ---------------------------------------------------------
-        // 2) CLAMP ON (ANTES DE ABRIR O PORTE)  <-- igual teu amigo
+        // 2) CLAMP ON (ANTES DE ABRIR O PORTE)
         // ---------------------------------------------------------
-        command.mask  = Clamp_MSK;
+        command.mask = Clamp_MSK;
         command.state = Clamp_ON;
         xQueueSendToBack(xComQueue, &command, 0);
 
         if (FACTORY_IO_Sensors_Get(Clamped_MSK) != Clamped_ON)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Clamped_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Clamped_MSK;
             s.sensor_state = Clamped_ON;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -311,13 +311,13 @@ void vTaskAscenseur(void *pvParameters)
         // 3) ABRIR PORTE e parar subida/limite (como ele faz junto)
         // ---------------------------------------------------------
         command.mask  = (Porte_MSK | Ascenceur_to_limit_MSK | Monter_Ascenseur_MSK);
-        command.state = (Porte_ON  | Ascenceur_to_limit_OFF | Monter_Ascenseur_OFF);
+        command.state = (Porte_ON | Ascenceur_to_limit_OFF | Monter_Ascenseur_OFF);
         xQueueSendToBack(xComQueue, &command, 0);
 
         if (FACTORY_IO_Sensors_Get(Porte_Ouverte_MSK) != Porte_Ouverte_ON)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Porte_Ouverte_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Porte_Ouverte_MSK;
             s.sensor_state = Porte_Ouverte_ON;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -325,8 +325,8 @@ void vTaskAscenseur(void *pvParameters)
 
         if (FACTORY_IO_Sensors_Get(Limite_Porte_MSK) != Limite_Porte_OFF)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Limite_Porte_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Limite_Porte_MSK;
             s.sensor_state = Limite_Porte_OFF;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -337,17 +337,16 @@ void vTaskAscenseur(void *pvParameters)
 
         // ---------------------------------------------------------
         // 4) DESCE UM POUCO (teu detalhe do “dar espaço pro clamp/porte”)
-        //    No código do teu amigo ele já manda "Descendre ON" aqui.
         // ---------------------------------------------------------
-        command.mask  = Descendre_Ascenseur_MSK;
+        command.mask = Descendre_Ascenseur_MSK;
         command.state = Descendre_Ascenseur_ON;
         xQueueSendToBack(xComQueue, &command, 0);
 
-        // espera sair do Etage 1 (igual teu amigo)
+        // espera sair do Etage 1
         if (FACTORY_IO_Sensors_Get(Ascenceur_Etage_1_MSK) != Ascenceur_Etage_1_OFF)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Ascenceur_Etage_1_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Ascenceur_Etage_1_MSK;
             s.sensor_state = Ascenceur_Etage_1_OFF;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -357,24 +356,24 @@ void vTaskAscenseur(void *pvParameters)
         vTaskDelay(NUDGE_DOWN_TIME);
 
         // para de descer por enquanto
-        command.mask  = Descendre_Ascenseur_MSK;
+        command.mask = Descendre_Ascenseur_MSK;
         command.state = Descendre_Ascenseur_OFF;
         xQueueSendToBack(xComQueue, &command, 0);
 
         vTaskDelay(SETTLE_WAIT);
 
         // ---------------------------------------------------------
-        // 5) FECHA PORTE + CLAMP OFF (igual teu amigo faz junto)
+        // 5) FECHA PORTE + CLAMP OFF
         // ---------------------------------------------------------
-        command.mask  = (Clamp_MSK | Porte_MSK);
+        command.mask = (Clamp_MSK | Porte_MSK);
         command.state = (Clamp_OFF | Porte_OFF);
         xQueueSendToBack(xComQueue, &command, 0);
 
         // (opcional, mas ajuda a não “bugar”)
         if (FACTORY_IO_Sensors_Get(Limite_Porte_MSK) != Limite_Porte_ON)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Limite_Porte_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Limite_Porte_MSK;
             s.sensor_state = Limite_Porte_ON;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -388,17 +387,17 @@ void vTaskAscenseur(void *pvParameters)
         xSemaphoreTake(xSem3, portMAX_DELAY);
 
         // ---------------------------------------------------------
-        // 6) CLAMP ON + PORTE ON juntos (igual teu amigo faz)
+        // 6) CLAMP ON + PORTE ON juntos
         // ---------------------------------------------------------
-        command.mask  = (Clamp_MSK | Porte_MSK);
+        command.mask = (Clamp_MSK | Porte_MSK);
         command.state = (Clamp_ON  | Porte_ON);
         xQueueSendToBack(xComQueue, &command, 0);
 
         // espera porta aberta
         if (FACTORY_IO_Sensors_Get(Porte_Ouverte_MSK) != Porte_Ouverte_ON)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Porte_Ouverte_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Porte_Ouverte_MSK;
             s.sensor_state = Porte_Ouverte_ON;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -407,8 +406,8 @@ void vTaskAscenseur(void *pvParameters)
         // espera sair do limite fechado
         if (FACTORY_IO_Sensors_Get(Limite_Porte_MSK) != Limite_Porte_OFF)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Limite_Porte_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Limite_Porte_MSK;
             s.sensor_state = Limite_Porte_OFF;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -418,16 +417,16 @@ void vTaskAscenseur(void *pvParameters)
         vTaskDelay(DROP_WAIT);
 
         // ---------------------------------------------------------
-        // 7) DESCE ATÉ RDC COM LIMITE (como teu amigo faz)
+        // 7) DESCE ATÉ RDC COM LIMITE
         // ---------------------------------------------------------
-        command.mask  = (Descendre_Ascenseur_MSK | Ascenceur_to_limit_MSK);
+        command.mask = (Descendre_Ascenseur_MSK | Ascenceur_to_limit_MSK);
         command.state = (Descendre_Ascenseur_ON  | Ascenceur_to_limit_ON);
         xQueueSendToBack(xComQueue, &command, 0);
 
         if (FACTORY_IO_Sensors_Get(Ascenceur_Etage_RDC_MSK) != Ascenceur_Etage_RDC_ON)
         {
-            s.sem_id       = 3;
-            s.sensor_id    = Ascenceur_Etage_RDC_MSK;
+            s.sem_id = 3;
+            s.sensor_id = Ascenceur_Etage_RDC_MSK;
             s.sensor_state = Ascenceur_Etage_RDC_ON;
             xQueueSendToBack(xSubcribeQueue, &ps, 0);
             xSemaphoreTake(xSemAscenseur, portMAX_DELAY);
@@ -436,7 +435,7 @@ void vTaskAscenseur(void *pvParameters)
         // ---------------------------------------------------------
         // 8) FECHA PORTE + para elevador + clamp OFF (final)
         // ---------------------------------------------------------
-        command.mask  = (Ascenceur_to_limit_MSK | Porte_MSK | Descendre_Ascenseur_MSK | Clamp_MSK);
+        command.mask = (Ascenceur_to_limit_MSK | Porte_MSK | Descendre_Ascenseur_MSK | Clamp_MSK);
         command.state = (Ascenceur_to_limit_OFF | Porte_OFF | Descendre_Ascenseur_OFF | Clamp_OFF);
         xQueueSendToBack(xComQueue, &command, 0);
 
@@ -465,75 +464,75 @@ void vTaskPalette(void *pvParameters)
 
     while (1)
     {
-        // Wait for the pallet to exit
-        mPalette.sem_id       = 2;
-        mPalette.sensor_id    = Sortie_Palette_MSK;
+        // Espera o palete sair
+        mPalette.sem_id = 2;
+        mPalette.sensor_id = Sortie_Palette_MSK;
         mPalette.sensor_state = Sortie_Palette_OFF;
         ps = &mPalette;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
 
-        // Synchronization semaphore
+        // Semaforo de sincronização
         xSemaphoreTake(xSemPalette, portMAX_DELAY);
 
-        // Turn on the pallet distribution
-        command.mask  = Distribution_Palette_MSK;
+        // Liga a distribuição do palete
+        command.mask = Distribution_Palette_MSK;
         command.state = Distribution_Palette_ON;
         m_cmd = &command;
         (void)m_cmd;
         xQueueSendToBack(xComQueue, &command, 0);
 
-        // Wait for the distribution
+        // Esperca a distribução
         vTaskDelay(500);
 
-        // Turn off the pallet distribution
-        command.mask  = Distribution_Palette_MSK;
+        // Desliga a distribuição do palete
+        command.mask = Distribution_Palette_MSK;
         command.state = Distribution_Palette_OFF;
         xQueueSendToBack(xComQueue, &command, 0);
 
-        // Wait for the pallet to arrive
-        mPalette.sem_id       = 2;
-        mPalette.sensor_id    = Entree_Palette_MSK;
+        // Espera o palete chegar
+        mPalette.sem_id = 2;
+        mPalette.sensor_id = Entree_Palette_MSK;
         mPalette.sensor_state = Entree_Palette_ON;
         ps = &mPalette;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemPalette, portMAX_DELAY);
 
-        // Turn on the pallet loading conveyor
+        // Liga o palete loading conveyor
         command.mask  = Charger_Palette_MSK;
         command.state = Charger_Palette_ON;
         xQueueSendToBack(xComQueue, &command, 0);
 
-        // Wait for the pallet to arrive at the exit
-        mPalette.sem_id       = 2;
-        mPalette.sensor_id    = Sortie_Palette_MSK;
+        // Espera o palete ir pra saida
+        mPalette.sem_id = 2;
+        mPalette.sensor_id = Sortie_Palette_MSK;
         mPalette.sensor_state = Sortie_Palette_ON;
         ps = &mPalette;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemPalette, portMAX_DELAY);
 
-        // Turn off the pallet loading conveyor
-        command.mask  = Charger_Palette_MSK;
+        // Desliga o palete loading conveyor
+        command.mask = Charger_Palette_MSK;
         command.state = Charger_Palette_OFF;
         xQueueSendToBack(xComQueue, &command, 0);
 
-        // Synchronization semaphore
+        // Semaforo de sincronização
         xSemaphoreTake(xSem2, portMAX_DELAY);
 
-        // Turn on the pallet loading conveyor
-        command.mask  = Charger_Palette_MSK;
+        // Liga o palete loading conveyor
+        command.mask = Charger_Palette_MSK;
         command.state = Charger_Palette_ON;
         xQueueSendToBack(xComQueue, &command, 0);
 
-        // Wait for the pallet to exit
-        mPalette.sem_id       = 2;
-        mPalette.sensor_id    = Sortie_Palette_MSK;
+        // Espera o palete ir pra saida
+        mPalette.sem_id = 2;
+        mPalette.sensor_id = Sortie_Palette_MSK;
         mPalette.sensor_state = Sortie_Palette_OFF;
         ps = &mPalette;
         xQueueSendToBack(xSubcribeQueue, &ps, 0);
         xSemaphoreTake(xSemPalette, portMAX_DELAY);
 
-        // Turn off the pallet loading conveyor
-        command.mask  = Charger_Palette_MSK;
+        // Desliga o palete loading conveyor
+        command.mask = Charger_Palette_MSK;
         command.state = Charger_Palette_OFF;
         xQueueSendToBack(xComQueue, &command, 0);
 
@@ -557,8 +556,8 @@ void vTaskRead(void *pvParameters)
 
     for (int i = 0; i < SIZE; i++)
     {
-        tab[i].sem_id       = 0;
-        tab[i].sensor_id    = 0;
+        tab[i].sem_id = 0;
+        tab[i].sensor_id = 0;
         tab[i].sensor_state = 0;
     }
 
@@ -608,8 +607,8 @@ void vTaskRead(void *pvParameters)
                     {
                         xSemaphoreGive(xSemCarton);
 
-                        tab[i].sem_id       = 0;
-                        tab[i].sensor_id    = 0;
+                        tab[i].sem_id = 0;
+                        tab[i].sensor_id = 0;
                         tab[i].sensor_state = 0;
                     }
 
@@ -617,8 +616,8 @@ void vTaskRead(void *pvParameters)
                     {
                         xSemaphoreGive(xSemPalette);
 
-                        tab[i].sem_id       = 0;
-                        tab[i].sensor_id    = 0;
+                        tab[i].sem_id = 0;
+                        tab[i].sensor_id = 0;
                         tab[i].sensor_state = 0;
                     }
 
@@ -626,8 +625,8 @@ void vTaskRead(void *pvParameters)
                     {
                         xSemaphoreGive(xSemAscenseur);
 
-                        tab[i].sem_id       = 0;
-                        tab[i].sensor_id    = 0;
+                        tab[i].sem_id = 0;
+                        tab[i].sensor_id = 0;
                         tab[i].sensor_state = 0;
                     }
 
@@ -635,8 +634,8 @@ void vTaskRead(void *pvParameters)
                     {
                         xSemaphoreGive(xSemPoussoirEvt);
 
-                        tab[i].sem_id       = 0;
-                        tab[i].sensor_id    = 0;
+                        tab[i].sem_id = 0;
+                        tab[i].sensor_id = 0;
                         tab[i].sensor_state = 0;
                     }
 
@@ -644,8 +643,8 @@ void vTaskRead(void *pvParameters)
                     {
                         xSemaphoreGive(xSemPorteEvt);
 
-                        tab[i].sem_id       = 0;
-                        tab[i].sensor_id    = 0;
+                        tab[i].sem_id = 0;
+                        tab[i].sensor_id = 0;
                         tab[i].sensor_state = 0;
                     }
                 }
